@@ -2,7 +2,6 @@ from pandas import DataFrame
 
 from proyecto.marginalizador import Maginalizador
 
-
 class GeneradorMatriz:
 
     def __init__(self):
@@ -19,7 +18,7 @@ class GeneradorMatriz:
         # 2. Marginalizar las columnas que no se van a tener en cuenta según las variables del sistema candidato
         #matrix_resultante = self.marginalizar_columnas(matrix_resultante, variables_sistema_candidato)
         
-        # 4. Retornar la matriz resultante
+        # 3. Retornar la matriz resultante
         return matrix_resultante
 
     def marginalizar_columnas(self, matrix_original: DataFrame, variables_sistema_candidato: list) -> DataFrame:
@@ -36,11 +35,15 @@ class GeneradorMatriz:
         y las variables que no se toman en cuenta en el sistema candidato.
         """
         # Identificar las variables que no se tienen en cuenta en el sistema candidato
-        indices_variables_a_eliminar = [i for i, var in enumerate(variables_sistema_candidato) if var == 0]
-        
+        indices_variables_a_eliminar = [i for i, var in enumerate(variables_sistema_candidato) if var == 0]    
+
         for index, fila in matrix_original.iterrows():
             if self._es_fila_a_eliminar(fila.name, estado_inicial, indices_variables_a_eliminar):
                 matrix_original.drop(index, inplace=True)
+            else:
+                # Actualiza el nombre del índice de acuerdo a las variables del sistema candidato
+                nuevo_nombre = self.eliminar_variables_fila(fila.name, indices_variables_a_eliminar)
+                matrix_original.rename({fila.name: nuevo_nombre}, inplace=True)
         return matrix_original
 
     def _es_fila_a_eliminar(self, fila: str, estado_inicial: list, indices_variables_a_eliminar: list) -> bool:
@@ -52,3 +55,9 @@ class GeneradorMatriz:
             if int(fila[indice]) != int(estado_inicial[indice]):
                 return True
         return False
+    
+    def eliminar_variables_fila(self, fila: str, indices_variables_a_eliminar: list) -> str:
+        """
+        Retorna el nombre de la fila eliminando las variables no incluidas en el sistema candidato.
+        """
+        return "".join([fila[i] for i in range(len(fila)) if i not in indices_variables_a_eliminar])
