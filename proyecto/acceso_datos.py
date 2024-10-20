@@ -1,7 +1,8 @@
 import pandas as pd
 import itertools
-import math
 import os
+
+from proyecto.metodos_comunes import MetodosComunes
 
 class AccesoDatos:
 
@@ -28,22 +29,16 @@ class AccesoDatos:
         
         return combinaciones_reordenadas
 
-    def _asignar_encabezados_binarios(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _asignar_encabezados_binarios(self, matriz: pd.DataFrame) -> pd.DataFrame:
         """Asigna encabezados de filas y columnas con combinaciones binarias"""
-        # Supongamos que el número de columnas indica el número de variables
-        cantidad_columnas = df.index.size
-        print(f"cantidad_columnas: {cantidad_columnas}")
-        n_variables = int(math.log2(cantidad_columnas))
-
-        print(f"n_variables: {n_variables}")
-
+        catidad_variables = MetodosComunes.obtener_cantidad_de_variables(matriz)
 
         # Generar combinaciones binarias
-        combinaciones_binarias = self._generar_combinaciones_binarias(n_variables)
+        combinaciones_binarias = self._generar_combinaciones_binarias(catidad_variables)
 
         # Asignar las combinaciones binarias a filas y columnas
-        df.index = combinaciones_binarias
-        df.columns = combinaciones_binarias
+        matriz.index = combinaciones_binarias
+        matriz.columns = combinaciones_binarias
         
-        return df
+        return matriz
 

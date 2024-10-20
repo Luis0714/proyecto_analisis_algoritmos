@@ -1,71 +1,96 @@
 from pandas import DataFrame
 
+from proyecto.metodos_comunes import MetodosComunes
+
 class Maginalizador:
     
-    def marginalizar_en_estados_futuros(self, matrix_original: DataFrame, estado_inicial: list, variables_sistema_candidato: list) -> DataFrame:
+    def marginalizar_en_estados_futuros(self, matriz: DataFrame, variables_estado_futuro: list) -> DataFrame:
         """
         Marginaliza las columnas eliminando las que no se van a tener en cuenta y luego 
         sumando las columnas que quedan con el mismo encabezado (binario).
         """
+
         # 1. Identificar las columnas a eliminar
-        indices_columnas_a_eliminar = self.obtener_columnas_a_eliminar(matrix_original.columns, estado_inicial, variables_sistema_candidato)
+        indices_columnas_a_eliminar = self.obtener_indices_variables_a_eliminar(variables_estado_futuro)
+        if len(indices_columnas_a_eliminar) == 0: return matriz
         print(f"Indices de columnas a eliminar: {indices_columnas_a_eliminar}")
         
         # 2. Eliminar las columnas que no se van a tener en cuenta
-        matrix_resultante = matrix_original.drop(columns=indices_columnas_a_eliminar)
+        matriz.columns = [self.eliminar_variables(colunm, indices_columnas_a_eliminar) for colunm in matriz.columns]
         
         # 3. Agrupar las columnas restantes con el mismo encabezado (binario) y sumarlas
-        matrix_resultante = self.agrupar_y_sumar_columnas(matrix_resultante)
+        matriz = self.__agrupar_y_sumar_columnas(matriz)
 
-        return matrix_resultante
+        return matriz
 
-    def obtener_columnas_a_eliminar(self, columnas: list, estado_inicial: list, variables_sistema_candidato: list) -> list:
+    def marginalizar_en_estados_actuales(self, matriz: DataFrame, variables_a_eliminar: list) -> DataFrame:
         """
-        Retorna los nombres de las columnas que deben ser eliminadas según el estado inicial
-        y las variables que no se toman en cuenta en el sistema candidato.
+           Marginaliza un DataFrame en filas eliminando las que no se van a tener en cuenta.
+            y luego sumando y dividiendo sobre 2 las filas que quedan con el mismo encabezado (binario).
         """
-        columnas_a_eliminar = []
-        # Identificar las variables que no se tienen en cuenta en el sistema candidato
-        indices_variables_a_eliminar = [i for i, var in enumerate(variables_sistema_candidato) if var == 0]
+        # 1. Identificar las filas a eliminar
+        indices_variables_a_eliminar = self.obtener_indices_variables_a_eliminar(variables_sistema_candidato=variables_a_eliminar)
 
-        # Iterar por cada columna (cada columna es un string binario)
-        for columna in columnas:
-            # Verificar si la columna tiene un valor distinto al estado inicial para las variables no incluidas
-            for indice in indices_variables_a_eliminar:
-                if int(columna[indice]) != int(estado_inicial[indice]):
-                    columnas_a_eliminar.append(columna)
-                    break
+        # 2. Eliminar las filas que no se van a tener en cuenta
+        matriz.index = [self.eliminar_variables(fila, indices_variables_a_eliminar) for fila in matriz.index]
 
-        return columnas_a_eliminar
+        # 3. Agrupar las filas restantes con el mismo encabezado (binario), sumarlas y dividirlas sobre la cantidad de variables
+        catidad_variables = MetodosComunes.obtener_cantidad_de_variables(matriz)
+        matriz = self.__agrupar_y_sumar_filas(matriz) / catidad_variables
 
-    def agrupar_y_sumar_columnas(self, matrix_resultante: DataFrame) -> DataFrame:
+        return matriz
+    
+    
+    def __agrupar_y_sumar_filas(self, matriz: DataFrame) -> DataFrame:
+        """
+        Agrupa las filas restantes con el mismo encabezado (binario) y las suma.
+        """
+        matriz = matriz.groupby(matriz.index).sum()
+        return matriz
+
+    def __agrupar_y_sumar_columnas(self, matriz: DataFrame) -> DataFrame:
         """
         Agrupa las columnas restantes con el mismo encabezado (binario) y las suma.
         """
-        # Crear una copia del DataFrame original para evitar cambios en el original
-        matrix_agrupada = matrix_resultante.copy()
+        matriz = matriz.T.groupby(level=0).sum().T
+        return matriz
+        
 
-        # Crear un diccionario para agrupar y sumar las columnas que tienen el mismo encabezado binario
-        columnas_agrupadas = {}
+    #Metodos para eliminar filas de una matriz -------------------------
+    def eliminar_filas(self, matriz_original: DataFrame, estado_inicial: list, variables_sistema_candidato: list) -> DataFrame:
+        """
+        Retorna los índices de las filas que deben ser eliminadas en función del estado inicial
+        y las variables que no se toman en cuenta en el sistema candidato.
+        """
+        indices_variables_a_eliminar = self.obtener_indices_variables_a_eliminar(variables_sistema_candidato)
+        if len(indices_variables_a_eliminar) == 0: return matriz_original
+        for index, fila in matriz_original.iterrows():
+            if self.__se_puede_eliminar(fila.name, estado_inicial, indices_variables_a_eliminar):
+                matriz_original.drop(index, inplace=True)
+            else:
+                # Actualiza el nombre del índice de acuerdo a las variables del sistema candidato
+                nuevo_nombre = self.eliminar_variables(fila.name, indices_variables_a_eliminar)
+                matriz_original.rename({fila.name: nuevo_nombre}, inplace=True)
+        return matriz_original
 
-        for columna in matrix_agrupada.columns:
-            # Eliminar las columnas que ya se hayan agrupado y sumado
-            if columna not in columnas_agrupadas:
-                # Filtrar las columnas que tienen el mismo encabezado (binario)
-                columnas_similares = [col for col in matrix_agrupada.columns if col == columna]
-                
-                # Sumar las columnas similares
-                suma_columnas = matrix_agrupada[columnas_similares].sum(axis=1)
-                
-                # Guardar la suma en el nuevo DataFrame
-                columnas_agrupadas[columna] = suma_columnas
-
-        # Crear un nuevo DataFrame con las columnas agrupadas y sumadas
-        matrix_final = DataFrame(columnas_agrupadas)
-
-        return matrix_final
-
+    def __se_puede_eliminar(self, fila: str, estado_inicial: list, indices_variables_a_eliminar: list) -> bool:
+        """
+        Verifica si una fila debe ser eliminada comparando las variables no incluidas en el sistema candidato.
+        """
+        # Si alguna de las variables a eliminar no coincide con el estado inicial, la fila debe eliminarse
+        for indice in indices_variables_a_eliminar:
+            if int(fila[indice]) != int(estado_inicial[indice]):
+                return True
+        return False
     
-    def marginalizar_en_estados_actuales(self, df: DataFrame, indices_variables_a_eliminar: list) -> DataFrame:
-        """Marginaliza un DataFrame en filas"""
-        return df.sum(axis=1)
+    def eliminar_variables(self, estado: str, indices_variables_a_eliminar: list) -> str:
+        """
+        Retorna el nombre de la fila eliminando las variables no incluidas en el sistema candidato.
+        """
+        return "".join([estado[i] for i in range(len(estado)) if i not in indices_variables_a_eliminar])
+    
+    def obtener_indices_variables_a_eliminar(self, variables_sistema_candidato: list) -> list:
+        """
+        Retorna los índices de las variables que no se incluyen en el sistema candidato.
+        """
+        return [i for i in range(len(variables_sistema_candidato)) if variables_sistema_candidato[i] == 0]
