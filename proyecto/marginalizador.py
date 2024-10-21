@@ -13,7 +13,6 @@ class Maginalizador:
         # 1. Identificar las columnas a eliminar
         indices_columnas_a_eliminar = self.obtener_indices_variables_a_eliminar(variables_estado_futuro)
         if len(indices_columnas_a_eliminar) == 0: return matriz
-        print(f"Indices de columnas a eliminar: {indices_columnas_a_eliminar}")
         
         # 2. Eliminar las columnas que no se van a tener en cuenta
         matriz.columns = [self.eliminar_variables(colunm, indices_columnas_a_eliminar) for colunm in matriz.columns]
@@ -35,8 +34,10 @@ class Maginalizador:
         matriz.index = [self.eliminar_variables(fila, indices_variables_a_eliminar) for fila in matriz.index]
 
         # 3. Agrupar las filas restantes con el mismo encabezado (binario), sumarlas y dividirlas sobre la cantidad de variables
-        catidad_variables = MetodosComunes.obtener_cantidad_de_variables(matriz)
-        matriz = self.__agrupar_y_sumar_filas(matriz) / catidad_variables
+        cantidad_filas_agrupadas = MetodosComunes.obtener_cantidad_de_variables(matriz)
+        print("cantidad de variables para dividir", cantidad_filas_agrupadas)
+        #PRGUNTAR A JUAN A VER COMO LO SOLUCIONAMOS LA CANTIDAD SOBRE LA CUAL SE DIVIDE
+        matriz = self.__agrupar_y_sumar_filas(matriz) / 2
 
         return matriz
     

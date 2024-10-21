@@ -1,35 +1,33 @@
 import math
 from pandas import DataFrame
+import numpy as np
 
 
 class MetodosComunes:
   
-
     @staticmethod
     def obtener_cantidad_de_variables(matriz: DataFrame) -> int:
         cantidad_columnas = matriz.index.size
-        print(f"cantidad_columnas: {cantidad_columnas}")
         n_variables = int(math.log2(cantidad_columnas))
-        print(f"n_variables: {n_variables}")
         return n_variables
     
     @staticmethod
-    def crear_conjunto_de_letras_segun_estados(variables_estado_futuro: list, variables_estado_actual: list, cantidad_variables: int) -> str:
+    def crear_conjunto_de_letras_segun_estados(variables_estado_futuro: list, variables_estado_actual: list, variables_sistama_candidato: list) -> str:
         """
         Crea un conjunto de letras según los estados actual y futuro
         """
-        letras_variables_estado_futuro = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_futuro, cantidad_variables, es_variables_estado_futuro=True)
-        letras_variables_estado_actual = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_actual, cantidad_variables)
+        letras_variables_estado_futuro = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_futuro, variables_sistama_candidato, es_variables_estado_futuro=True)
+        letras_variables_estado_actual = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_actual, variables_sistama_candidato)
          # Retorna una cadena con la forma "{At+1, Bt}"
         return f"{{{letras_variables_estado_futuro}, {letras_variables_estado_actual}}}"
     
     @staticmethod
-    def covertir_estado_de_lista_a_letras(estado: list,  cantidad_variables: int, es_variables_estado_futuro:bool = False) -> str:
+    def covertir_estado_de_lista_a_letras(estado: list,  variables_sistama_candidato: list, es_variables_estado_futuro:bool = False) -> str:
         """
         Convierte un estado de lista a letras
         """
         vacio = "{"+"vacio"+"}"
-        letras_variables = MetodosComunes.generar_letras_avecedario_según_cantidad(cantidad_variables)
+        letras_variables = MetodosComunes.generar_letras_avecedario_según_cantidad(variables_sistama_candidato)
         letras_estado = ''.join([letras_variables[i] for i, bit in enumerate(estado) if bit == 1])
         if letras_estado == "":
             letras_estado = vacio
@@ -40,11 +38,14 @@ class MetodosComunes:
         return letras_estado
     
     @staticmethod
-    def generar_letras_avecedario_según_cantidad(cantidad: int) -> list:
+    def generar_letras_avecedario_según_cantidad(variables_sistama_candidato: list) -> list:
         """
         Genera letras del abecedario según la cantidad de variables
         """
-        return [chr(65 + i) for i in range(cantidad)]
+        cantidad = len(variables_sistama_candidato)
+        abcedario = [chr(65 + i) for i in range(cantidad)]
+        letras = [abcedario[i] for i, bit in enumerate(variables_sistama_candidato) if bit == 1]
+        return letras
     
     @staticmethod
     def es_estado_vacio(estado: list) -> bool:
@@ -76,3 +77,60 @@ class MetodosComunes:
         valor_estado_actual = ''.join(map(str, lista_estado_actual))
         return valor_estado_actual
     
+    @staticmethod
+    def obtener_estados_futuros_a_analizar(cantidad_variables: int):
+        """
+        Retorna los estados futuros a analizar, una lista de listas
+        cada lista representa un estado futuro
+        si son 3 variables, se tienen 3 estados futuros cada uno con un 1 en una posición diferente y el resto de ceros
+        """
+        estados_futuros = []
+        for i in range(cantidad_variables):
+            estado_futuro = [0] * cantidad_variables
+            estado_futuro[i] = 1
+            estados_futuros.append(estado_futuro)
+        return estados_futuros
+    
+    @staticmethod
+    def obtener_subproblemas(variables_estado_actual: list, variables_estado_futuro: list) -> list:
+        """
+        si tenemos estado futuro [0, 1, 1] y estado actual [1, 0, 1] = BCt+1, ACt
+        se obtienen los subproblemas: [[[0, 1, 0], [1, 0, 1]],[[0, 0, 1], [1, 0, 1]]] = [Bt+1, ACt], [Ct+1, ACt]
+        """
+        subproblemas = []
+        for i, bit in enumerate(variables_estado_futuro):
+            if bit == 1:
+                subproblema = variables_estado_futuro.copy()
+                subproblema[i] = 0
+                subproblemas.append([subproblema, variables_estado_actual])
+        return subproblemas
+    
+    @staticmethod
+    def aplicar_producto_tensor_a_lista_distribucion_probabilidades(lista_distribuciones_probabilidades: list):
+        """
+        Aplica el producto tensor a una lista de distribuciones de probabilidades
+        """
+        producto_tensor = lista_distribuciones_probabilidades[0]
+        for distribucion in lista_distribuciones_probabilidades[1:]:
+            producto_tensor = MetodosComunes.tensor_product(producto_tensor, distribucion)
+        return producto_tensor
+    
+    @staticmethod
+    def tensor_product(distribucion_uno, distribucion_dos):
+        """Realiza el producto tensorial de dos matrices."""
+        resul1 = np.array(distribucion_uno)
+        resul2 = np.array(distribucion_dos)
+        tensor_product = np.kron(resul1, resul2)
+        return tensor_product
+    
+    @staticmethod
+    def mostrar_subproblemas_en_letras(subproblemas: list, variables_sistama_candidato: list):
+        """
+        Muestra los subproblemas en letras
+        """
+        for subproblema in subproblemas:
+            variables_estado_actual = subproblema[1]
+            variables_estado_futuro = subproblema[0]
+            letras_estado_futuro = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_futuro, variables_sistama_candidato, es_variables_estado_futuro=True)
+            letras_estado_actual = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_actual, variables_sistama_candidato)
+            print(f"Subproblema: {letras_estado_futuro}, {letras_estado_actual}")
