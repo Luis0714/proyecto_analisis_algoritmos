@@ -34,10 +34,10 @@ class Maginalizador:
         matriz.index = [self.eliminar_variables(fila, indices_variables_a_eliminar) for fila in matriz.index]
 
         # 3. Agrupar las filas restantes con el mismo encabezado (binario), sumarlas y dividirlas sobre la cantidad de variables
-        cantidad_filas_agrupadas = MetodosComunes.obtener_cantidad_de_variables(matriz)
+        cantidad_filas_agrupadas = 2
         print("cantidad de variables para dividir", cantidad_filas_agrupadas)
         #PRGUNTAR A JUAN A VER COMO LO SOLUCIONAMOS LA CANTIDAD SOBRE LA CUAL SE DIVIDE
-        matriz = self.__agrupar_y_sumar_filas(matriz) / 2
+        matriz = self.__agrupar_y_sumar_filas(matriz) / cantidad_filas_agrupadas
 
         return matriz
     

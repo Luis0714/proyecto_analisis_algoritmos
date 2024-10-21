@@ -1,2 +1,5 @@
 venv
 proyecto/__pycache__
+proyecto/__pycache__/*
+proyecto/__pycache__/
+proyecto/__pycache__/marginalizador.cpython-312.pyc

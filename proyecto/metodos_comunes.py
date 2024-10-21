@@ -94,15 +94,22 @@ class MetodosComunes:
     @staticmethod
     def obtener_subproblemas(variables_estado_actual: list, variables_estado_futuro: list) -> list:
         """
-        si tenemos estado futuro [0, 1, 1] y estado actual [1, 0, 1] = BCt+1, ACt
-        se obtienen los subproblemas: [[[0, 1, 0], [1, 0, 1]],[[0, 0, 1], [1, 0, 1]]] = [Bt+1, ACt], [Ct+1, ACt]
+        Genera los subproblemas a partir de los estados actuales y futuros.
+        Si tenemos estado futuro [0, 1, 1] y estado actual [1, 0, 1] = BCt+1, ACt
+        se obtienen los subproblemas: [[[0, 1, 0], [1, 0, 1]], [[0, 0, 1], [1, 0, 1]]] = [Bt+1, ACt], [Ct+1, ACt]
         """
         subproblemas = []
-        for i, bit in enumerate(variables_estado_futuro):
-            if bit == 1:
-                subproblema = variables_estado_futuro.copy()
-                subproblema[i] = 0
-                subproblemas.append([subproblema, variables_estado_actual])
+
+        # Recorre cada variable en el estado futuro para generar los subproblemas
+        for i in range(len(variables_estado_futuro)):
+            # Si la variable es diferente de 0 (es relevante), creamos un subproblema
+            if variables_estado_futuro[i] != 0:
+                subproblema_estado_futuro = [0] * len(variables_estado_futuro)
+                subproblema_estado_futuro[i] = variables_estado_futuro[i]  # Solo mantiene la variable en la posición i
+                
+                # Añade el subproblema a la lista de subproblemas (futuro, actual)
+                subproblemas.append([subproblema_estado_futuro, variables_estado_actual])
+
         return subproblemas
     
     @staticmethod
