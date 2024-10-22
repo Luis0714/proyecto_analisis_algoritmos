@@ -20,7 +20,6 @@ class CalculadorProbabilidades:
         self._matrices_probalilidades_estados_futuros = {}
         self._cache_probabilidades = {}
         self.calcular_probabilidades_estados_futuros(matriz_sistema_candidato)
-       
     
     def calcular_probabilidad(self, variables_estado_futuro: list, variables_estado_actual: list) -> DataFrame:
      

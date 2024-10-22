@@ -1,6 +1,7 @@
 import math
 from pandas import DataFrame
 import numpy as np
+from scipy.stats import wasserstein_distance
 
 
 class MetodosComunes:
@@ -141,3 +142,39 @@ class MetodosComunes:
             letras_estado_futuro = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_futuro, variables_sistama_candidato, es_variables_estado_futuro=True)
             letras_estado_actual = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_actual, variables_sistama_candidato)
             print(f"Subproblema: {letras_estado_futuro}, {letras_estado_actual}")
+
+    @staticmethod
+    def generar_complemento_estado(variables_estado:dict, variables_subsistema:dict) -> list:
+        """
+        Genera el complemento del estado, es decir, las variables que no están en el estado
+        y si están en el subsistema ejem:
+        estado = {At, Bt}  y subsistema = {At, Bt, At+1, Ct+1}.
+        complemento = {At+1, Ct+1}
+        """
+        complemento = variables_subsistema - variables_estado
+        return complemento
+    
+    @staticmethod
+    def convertir_estado_de_dic_a_lista(variables_estados: dict[str], variables_sistema_candidato: list) -> list:
+        """
+        Convierte un estado de diccionario a lista, 
+        devuelve una lista con dos elementos, el primero representa el estado futuro y el segundo el estado actual
+        """
+        variables_estado_futuro = [""] * len(variables_sistema_candidato)
+        variables_estado_actual = [""] * len(variables_sistema_candidato)
+        for variable in variables_estados:
+            if variable.endswith("t+1"):
+                variables_estado_futuro.append(variable)
+            else:
+                variables_estado_actual.append(variable)
+        #reemplzar las variables por 1 si estan en el estado y "" por 0 
+        estado_futuro = [1 if variable in variables_estado_futuro else 0 for variable in variables_sistema_candidato]
+        estado_actual = [1 if variable in variables_estado_actual else 0 for variable in variables_sistema_candidato]
+        return [estado_futuro, estado_actual]
+    
+    @staticmethod
+    def calcular_emd(distribucion_uno: np.ndarray, distribucion_dos: np.ndarray) -> float:
+        """
+        Calcula la distancia de earth mover
+        """
+        return wasserstein_distance(distribucion_uno, distribucion_dos)
