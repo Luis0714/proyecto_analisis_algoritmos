@@ -11,7 +11,9 @@ class PrimeraEstretegia:
     def encontrar_particicion_con_menor_perdida(conjunto_subsistema:dict) -> dict | float:
         pass
 
-   
+    def comparar_particiones_candidatas(self, particiones_candidatas: list) -> dict | float:
+        pass
+    
     def funcion_G(self, conjunto_estados:dict, distribucion_probabilidades_subsistema, cantidad_variables:dict) -> float:
         """
         Función G, g= EMD(P(conjunto_estados)⊗P(conjunto_estados_conplemento), P(distribucion_probabilidades_subsistema))
