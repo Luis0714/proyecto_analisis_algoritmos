@@ -1,3 +1,4 @@
+from pandas import DataFrame
 from proyecto.acceso_datos import AccesoDatos
 from proyecto.caculador_probabilidades import CalculadorProbabilidades
 from proyecto.generador_matriz import GeneradorMatriz
@@ -21,18 +22,41 @@ def main():
     matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
 
     #prueba con todas las variables del estado actual y futuro
-    variable_estado_futuro = [1, 1, 1] # ABC t+1
-    variable_estado_actual = [0, 0, 0] # VACIO t
+    variable_estado_futuro = [1, 1, 0] # AB t+1
+    variable_estado_actual = [0, 1, 0] # VACIO t
+
+    variable_estado_futuro_dos = [0, 0, 1] # C t+1
+    variable_estado_actual_dos = [1, 0, 1] # ABC t
     print("Matriz sistema candidato")
     print(matriz_sistema_candidato, '\n')
-    prueba_calcular_probabilidad(matriz_sistema_candidato, 
+    distribucion_uno = prueba_calcular_probabilidad(matriz_sistema_candidato, 
                                 variables_sistema_candidato, 
                                 variable_estado_futuro,
                                 variable_estado_actual,
                                 estado_inicial)
+    print("distriucion de probabilidad uno")
+    print(distribucion_uno)
+    distribucion_dos = prueba_calcular_probabilidad(matriz_sistema_candidato,
+                                variables_sistema_candidato,
+                                variable_estado_futuro_dos,
+                                variable_estado_actual_dos,
+                                estado_inicial)
+    print("distriucion de probabilidad dos")
+    print(distribucion_dos)
 
-   
-def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_estado_futuro, variables_estado_actual, estado_inicial):
+    EMD = prueba_emd(distribucion_uno, distribucion_dos)
+    print("Prueba exitosa")
+    print(F"Valor de EMD - {EMD}")
+
+
+
+def prueba_emd(distribucion_uno, distribucion_dos) -> float:
+    distancia = metodos_comunes.calcular_emd(distribucion_uno, distribucion_dos)
+    print("Distancia de earth mover")
+    print(distancia)
+    return distancia
+
+def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_estado_futuro, variables_estado_actual, estado_inicial) -> DataFrame:
     print("Probabilidad original a calcular")
     #prueba_generador_letras_estados(variables_estado_futuro, variables_estado_actual, variables_sistema_candidato)
     calculador_probabilidades = CalculadorProbabilidades(
@@ -46,6 +70,7 @@ def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_
     print(probabilidad)
     print('valor de probabilidad')
     print(probabilidad.sum())
+    return probabilidad
 
 #****************************************************************************************************************
 

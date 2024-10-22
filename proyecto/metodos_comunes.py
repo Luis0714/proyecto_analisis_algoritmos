@@ -2,7 +2,7 @@ import math
 from pandas import DataFrame
 import numpy as np
 from scipy.stats import wasserstein_distance
-
+import pyemd as pyphi
 
 class MetodosComunes:
   
@@ -178,3 +178,37 @@ class MetodosComunes:
         Calcula la distancia de earth mover
         """
         return wasserstein_distance(distribucion_uno, distribucion_dos)
+    
+    @staticmethod
+    def emd_pyphi(distribucion_uno: np.ndarray, distribucion_dos: np.ndarray) -> float:
+        print("D - 1")
+        print(distribucion_uno)
+        print("D - 2")
+        print(distribucion_dos)
+        """
+        Calculate the Earth Mover’s Distance (EMD) between two probability
+        distributions u and v.
+        The Hamming distance was used as the ground metric.
+        """
+        if not all(isinstance(arr , np.ndarray) for arr in [distribucion_uno, distribucion_dos]):
+            raise TypeError("u and v must be numpy arrays.")
+        cantidad_elementos: int = len(distribucion_uno)
+        costos = np.empty((cantidad_elementos, cantidad_elementos))
+        for i in range(cantidad_elementos):
+            costos[i, :i] = [MetodosComunes.hamming_distance(i, j) for j in range(i)]
+            costos[:i, i] = costos[i, :i]
+            np.fill_diagonal(costos , 0)
+            cost_matrix = np.array(costos , dtype=np.float64)
+        print("D - 1")
+        print(distribucion_uno)
+        # distribucion_uno = np.ascontiguousarray(distribucion_uno)
+        # distribucion_dos = np.ascontiguousarray(distribucion_dos)
+        # print("distriucion  - uno")
+        # print(distribucion_uno)
+        # print("distriucion dos")
+        # print(distribucion_dos)
+        return pyphi.emd(distribucion_uno, distribucion_dos, cost_matrix)
+    
+    @staticmethod
+    def hamming_distance(a: int , b: int) -> int:
+        return (a ^ b).bit_count ()
