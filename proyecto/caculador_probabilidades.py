@@ -27,8 +27,13 @@ class CalculadorProbabilidades:
         matriz = self._matriz_sistema_candidato.copy()
        
         # 1. Validar casos vacios
-        if self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz) is not -1 and self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz) is not None:
-            return self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz)
+        # a. Caso vacio estado actual
+        if MetodosComunes.es_estado_vacio(variables_estado_actual):
+            return self.calcular_probabilidad_caso_variables_estado_actual_vacio(variables_estado_futuro)
+        # b. Caso vacio estado futuro
+        if MetodosComunes.es_estado_vacio(variables_estado_futuro):
+            return self.calcular_probabilidad_caso_variables_estado_futuro_vacio(variables_estado_actual)
+
         # 2. valida caso no marginalizar estado actual ni futuro
         if self._validador_casos.es_caso_no_marginalizar_actual_no_marginalizar_futuro(variables_estado_futuro, variables_estado_actual):
             valor_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
@@ -122,7 +127,7 @@ class CalculadorProbabilidades:
         self._cache_probabilidades[letras_estados] = distribucion_probabilidades
         return distribucion_probabilidades
 
-    def calcular_probabilidades_estados_futuros(self, matriz: DataFrame):  
+    def calcular_probabilidades_estados_futuros(self, matriz: DataFrame):
         estados_futuros_a_analizar = MetodosComunes.obtener_estados_futuros_a_analizar(self._cantidad_varibles_matriz)
         for variables_estado_futuro in estados_futuros_a_analizar:
             matriz_para_analizar = matriz.copy()
@@ -130,19 +135,23 @@ class CalculadorProbabilidades:
             matriz_marginalizada = self._marginilizador.marginalizar_en_estados_futuros(matriz_para_analizar, variables_estado_futuro)
             self._matrices_probalilidades_estados_futuros[letras_estado_analizar] = matriz_marginalizada
 
-    def calcular_probabilidad_caso_variables_estado_actual_vacio(self, variables_estado_futuro: list, 
-                                                        cantidad_variables:int, cahe_probabilidades: dict = {}) -> float:
-        pass
-
-    def calcular_probabilidad_caso_variables_estado_futuro_vacio(self, matriz: DataFrame, variables_estado_actual: list,
-                                                        cantidad_variables:int, cahe_probabilidades: dict = {}) -> float:
+    def calcular_probabilidad_caso_variables_estado_actual_vacio(self, variables_estado_futuro:list) -> float:
+        variables_estado_actual = [0] * len(variables_estado_futuro)
+        subproblemas = MetodosComunes.obtener_subproblemas(variables_estado_actual, variables_estado_futuro)
+        probabilidades_subproblemas_calcualdas = []
+        MetodosComunes.mostrar_subproblemas_en_letras(subproblemas, self._variables_sistema_candidato)
         
-        matriz = self._marginilizador.marginalizar_en_estados_futuros(matriz, [0,0,0,0])
+
+    def calcular_probabilidad_caso_variables_estado_futuro_vacio(self, variables_estado_actual:list) -> list:
         valor_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
-        print(f"Valor estado actual: {valor_estado_actual}")
-        distribucion_probabilidades = matriz.loc[valor_estado_actual].values
-        print(distribucion_probabilidades)
+        distribucion_probabilidades = [1.0]
+        estado_futuro = [0] * len(variables_estado_actual)
+        letras_estados = MetodosComunes.crear_conjunto_de_letras_segun_estados(estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
+        print(f"Letras estados: {letras_estados}")
+        self._cache_probabilidades[letras_estados] = distribucion_probabilidades
         return distribucion_probabilidades
+
+        
 
     # Fin de metodos para calcular probabilidades -------------------------
 
