@@ -38,7 +38,7 @@ class Maginalizador:
         cantidad_filas_agrupadas = 2**len(indices_variables_a_eliminar)
         #print("cantidad de variables para dividir", cantidad_filas_agrupadas)
         matriz = self.__agrupar_y_sumar_filas(matriz) / cantidad_filas_agrupadas
-
+        
         return matriz
     
     
