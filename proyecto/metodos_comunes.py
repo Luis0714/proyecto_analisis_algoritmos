@@ -27,7 +27,7 @@ class MetodosComunes:
         Convierte un estado de lista a letras
         """
         vacio = "{"+"vacio"+"}"
-        letras_variables = MetodosComunes.generar_letras_avecedario_según_cantidad(variables_sistama_candidato)
+        letras_variables = MetodosComunes.generar_letras_abecedario_según_cantidad(variables_sistama_candidato)
         letras_estado = ''.join([letras_variables[i] for i, bit in enumerate(estado) if bit == 1])
         if letras_estado == "":
             letras_estado = vacio
@@ -38,13 +38,13 @@ class MetodosComunes:
         return letras_estado
     
     @staticmethod
-    def generar_letras_avecedario_según_cantidad(variables_sistama_candidato: list) -> list:
+    def generar_letras_abecedario_según_cantidad(variables_sistema_candidato: list) -> list:
         """
         Genera letras del abecedario según la cantidad de variables
         """
-        cantidad = len(variables_sistama_candidato)
-        abcedario = [chr(65 + i) for i in range(cantidad)]
-        letras = [abcedario[i] for i, bit in enumerate(variables_sistama_candidato) if bit == 1]
+        cantidad = len(variables_sistema_candidato)
+        abecedario = [chr(65 + i) for i in range(cantidad)]
+        letras = [abecedario[i] for i, bit in enumerate(variables_sistema_candidato) if bit == 1]
         return letras
     
     @staticmethod

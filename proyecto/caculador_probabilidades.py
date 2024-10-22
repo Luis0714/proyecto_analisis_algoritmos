@@ -27,8 +27,8 @@ class CalculadorProbabilidades:
         matriz = self._matriz_sistema_candidato.copy()
        
         # 1. Validar casos vacios
-        
-
+        if self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz) is not -1 and self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz) is not None:
+            return self._validador_casos.validar_casos_vacios(matriz, variables_estado_actual, variables_estado_futuro, self._cantidad_varibles_matriz)
         # 2. valida caso no marginalizar estado actual ni futuro
         if self._validador_casos.es_caso_no_marginalizar_actual_no_marginalizar_futuro(variables_estado_futuro, variables_estado_actual):
             valor_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
@@ -136,8 +136,14 @@ class CalculadorProbabilidades:
 
     def calcular_probabilidad_caso_variables_estado_futuro_vacio(self, matriz: DataFrame, variables_estado_actual: list,
                                                         cantidad_variables:int, cahe_probabilidades: dict = {}) -> float:
-        pass
-    
+        
+        matriz = self._marginilizador.marginalizar_en_estados_futuros(matriz, [0,0,0,0])
+        valor_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
+        print(f"Valor estado actual: {valor_estado_actual}")
+        distribucion_probabilidades = matriz.loc[valor_estado_actual].values
+        print(distribucion_probabilidades)
+        return distribucion_probabilidades
+
     # Fin de metodos para calcular probabilidades -------------------------
 
 
