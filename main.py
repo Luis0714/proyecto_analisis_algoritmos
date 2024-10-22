@@ -76,10 +76,9 @@ def main():
     #pruebas con sistema candidato con dos variables
     estado_inicial = [0, 1, 0, 1] # para aplicar en matriz original = A = 1, B = 1, C = 0, D = 1
     variables_sistema_candidato = [1, 0, 0, 1] # solo tener en cuenta A y D
-    # matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
-    # print("Matriz sistema candidato")
-    # print(matriz_sistema_candidato, '\n')
-    prueba_marginalizar(matriz, variables_sistema_candidato)
+    matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
+    print("Matriz sistema candidato")
+    print(matriz_sistema_candidato, '\n')
 
     #****************************************************************************************************************
     #prueba con todas las variables del estado actual y futuro
@@ -96,21 +95,21 @@ def main():
     
 
     #****************************************************************************************************************
-    #prueba con estado actual completo y estado futuro con un elemento
-    # variable_estado_futuro = [0, 1] # D t+1
-    # variable_estado_actual = [1, 1] # AD t
-    # prueba_calcular_probabilidad(matriz_sistema_candidato,
-    #                             variables_sistema_candidato,
-    #                             variable_estado_futuro,
-    #                             variable_estado_actual,
-    #                             estado_inicial)
+    # prueba con estado actual completo y estado futuro con un elemento
+    variable_estado_futuro = [0,0] # D t+1
+    variable_estado_actual = [1, 1] # AD t
+    prueba_calcular_probabilidad(matriz_sistema_candidato,
+                                variables_sistema_candidato,
+                                variable_estado_futuro,
+                                variable_estado_actual,
+                                estado_inicial)
     #****************************************************************************************************************
 
 
 
 
     #****************************************************************************************************************
-    #prueba que se generen subproblemas
+    # prueba que se generen subproblemas
     # variable_estado_futuro = [1, 1] # AD t+1
     # variable_estado_actual = [1, 0] # A t
     # prueba_calcular_probabilidad(matriz_sistema_candidato,
@@ -124,7 +123,7 @@ def main():
    
 def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_estado_futuro, variables_estado_actual, estado_inicial):
     print("Probabilidad original a calcular")
-    prueba_generador_letras_estados(variables_estado_futuro, variables_estado_actual, variables_sistema_candidato)
+    #prueba_generador_letras_estados(variables_estado_futuro, variables_estado_actual, variables_sistema_candidato)
     calculador_probabilidades = CalculadorProbabilidades(
         matriz_sistema_candidato=matriz,
         variables_sistema_candidato=variables_sistema_candidato,
@@ -135,16 +134,18 @@ def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_
     print("distriucion de probabilidad")
     print(probabilidad)
 
-def prueba_generador_letras_estados(estado_futuro: list, estado_actual: list, variables_sistama_candidato: list):
-    print("Prueba de generador de letras según estados")
-    letras = metodos_comunes.crear_conjunto_de_letras_segun_estados(estado_futuro, estado_actual, variables_sistama_candidato)
-    print(letras)
+#****************************************************************************************************************
+
+# def prueba_generador_letras_estados(estado_futuro: list, estado_actual: list, variables_sistama_candidato: list):
+#     print("Prueba de generador de letras según estados")
+#     letras = metodos_comunes.crear_conjunto_de_letras_segun_estados(estado_futuro, estado_actual, variables_sistama_candidato)
+#     print(letras)
 
 
-def prueba_generador_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato):
-    matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
-    print("Matriz sistema candidato")
-    print(matriz_sistema_candidato)
+# def prueba_generador_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato):
+#     matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
+#     print("Matriz sistema candidato")
+#     print(matriz_sistema_candidato)
    
 
 def prueba_marginalizar(matriz, variables_sistema_candidato):
@@ -165,6 +166,7 @@ def prueba_marginalizar(matriz, variables_sistema_candidato):
 #     print(matriz)
 #     print("Prueba exitosa")
 
+#****************************************************************************************************************
 
 #Pasos para método calcular la probabilidad de una variable e
 
