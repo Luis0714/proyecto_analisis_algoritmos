@@ -14,25 +14,22 @@ def main():
     matriz = acceso_datos.leer_datos("data.csv")
     print("Matriz original")
     print(matriz,'\n')
-
-    print("compelmento de estado")
-    print(MetodosComunes.generar_complemento_estado({'At', 'Bt'}, {'At', 'Bt', 'At+1', 'Ct+1'}))
     
     #prubas con sistema candidato con tres variables ABC
-    # estado_inicial = [0, 0, 0, 0]
-    # variables_sistema_candidato = [1, 1, 1, 0] # 1 indica que se tiene en cuenta la variable, 0 que no se tiene en cuenta A, B, C menos D
-    # matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
+    estado_inicial = [0, 0, 0, 0]
+    variables_sistema_candidato = [1, 1, 1, 0] # 1 indica que se tiene en cuenta la variable, 0 que no se tiene en cuenta A, B, C menos D
+    matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
 
-    # #prueba con todas las variables del estado actual y futuro
-    # variable_estado_futuro = [1, 1, 1] # ABC t+1
-    # variable_estado_actual = [0, 0, 0] # VACIO t
-    # print("Matriz sistema candidato")
-    # print(matriz_sistema_candidato, '\n')
-    # prueba_calcular_probabilidad(matriz_sistema_candidato, 
-    #                             variables_sistema_candidato, 
-    #                             variable_estado_futuro,
-    #                             variable_estado_actual,
-    #                             estado_inicial)
+    #prueba con todas las variables del estado actual y futuro
+    variable_estado_futuro = [1, 1, 1] # ABC t+1
+    variable_estado_actual = [0, 0, 0] # VACIO t
+    print("Matriz sistema candidato")
+    print(matriz_sistema_candidato, '\n')
+    prueba_calcular_probabilidad(matriz_sistema_candidato, 
+                                variables_sistema_candidato, 
+                                variable_estado_futuro,
+                                variable_estado_actual,
+                                estado_inicial)
 
    
 def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_estado_futuro, variables_estado_actual, estado_inicial):
@@ -47,6 +44,8 @@ def prueba_calcular_probabilidad(matriz, variables_sistema_candidato, variables_
     probabilidad = calculador_probabilidades.calcular_probabilidad(variables_estado_futuro, variables_estado_actual)
     print("distriucion de probabilidad")
     print(probabilidad)
+    print('valor de probabilidad')
+    print(probabilidad.sum())
 
 #****************************************************************************************************************
 

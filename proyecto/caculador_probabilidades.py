@@ -23,8 +23,12 @@ class CalculadorProbabilidades:
     
     def calcular_probabilidad(self, variables_estado_futuro: list, variables_estado_actual: list) -> DataFrame:
      
+        letras_estados = MetodosComunes.crear_conjunto_de_letras_segun_estados(variables_estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
+        if letras_estados in self._cache_probabilidades:
+            print("Probabilidad ya calculada")
+            return self._cache_probabilidades[letras_estados]
+        
         matriz = self._matriz_sistema_candidato.copy()
-       
         # 1. Validar casos vacios
         # a. Caso vacio estado actual
         if MetodosComunes.es_estado_vacio(variables_estado_actual):
@@ -50,7 +54,6 @@ class CalculadorProbabilidades:
     #Metodos para calcular probabilidades -------------------------
 
     def calcular_probabilidad_caso_no_mariginalizar_variables_estado_actual_ni_futuro(self, matriz: DataFrame, variables_estado_futuro: list, variables_estado_actual: list) -> DataFrame:
-
         valor_variables_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
         estado_letras = MetodosComunes.crear_conjunto_de_letras_segun_estados(variables_estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
         distribucion_probabilidades = matriz.loc[valor_variables_estado_actual].values
@@ -92,7 +95,7 @@ class CalculadorProbabilidades:
         cantidad_variables_estado_fuutro = MetodosComunes.obtener_cantidad_variables_a_tener_en_cuenta_en_estado(variables_estado_futuro)
         if cantidad_variables_estado_fuutro == 1:
             return self.calcular_probabilidad_caso_base_un_elemento_estado_futuro(variables_estado_futuro, variables_estado_actual)
-            
+        letras_estados = MetodosComunes.crear_conjunto_de_letras_segun_estados(variables_estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
         subproblemas = MetodosComunes.obtener_subproblemas(variables_estado_actual, variables_estado_futuro)
         print("Subproblemas generados")
         MetodosComunes.mostrar_subproblemas_en_letras(subproblemas, self._variables_sistema_candidato)
@@ -103,6 +106,7 @@ class CalculadorProbabilidades:
             probabilidad_subproblema = self.calcular_probabilidad_caso_base_un_elemento_estado_futuro(variables_estado_futuro_subproblema, variables_estado_actual_subproblema)
             probabilidades_subproblemas_calcualdas.append(probabilidad_subproblema)
         probabilidad = MetodosComunes.aplicar_producto_tensor_a_lista_distribucion_probabilidades(probabilidades_subproblemas_calcualdas)
+        self._cache_probabilidades[letras_estados] = probabilidad
         return probabilidad
         
     def calcular_probabilidad_caso_base_un_elemento_estado_futuro(self, variable_estado_futuro:list, variables_estado_actual:list) -> DataFrame:
@@ -134,31 +138,38 @@ class CalculadorProbabilidades:
             matriz_marginalizada = self._marginilizador.marginalizar_en_estados_futuros(matriz_para_analizar, variables_estado_futuro)
             self._matrices_probalilidades_estados_futuros[letras_estado_analizar] = matriz_marginalizada
 
-    def calcular_probabilidad_caso_base_un_elemento_estado_futuro_estado_actual_vacio(self, matriz: DataFrame, variables_estado_futuro: list) -> list:
-        estado_actual = [0] * len(variables_estado_futuro)
-        matriz_agrupada = self._marginilizador.marginalizar_en_estados_actuales(matriz, estado_actual)
-        return matriz_agrupada.loc[""].values
+    def calcular_probabilidad_caso_base_un_elemento_estado_futuro_estado_actual_vacio(self, matriz: DataFrame, variables_estado_actual:list) -> list:
+        matriz_agrupada = self._marginilizador.marginalizar_en_estados_actuales(matriz, variables_estado_actual)
+        distribucion_probabilidades = matriz_agrupada.loc[''].values
+        return distribucion_probabilidades
 
     def calcular_probabilidad_caso_variables_estado_actual_vacio(self, variables_estado_futuro:list) -> float:
         variables_estado_actual = [0] * len(variables_estado_futuro)
+        letras_estados = MetodosComunes.crear_conjunto_de_letras_segun_estados(variables_estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
         subproblemas = MetodosComunes.obtener_subproblemas(variables_estado_actual, variables_estado_futuro)
         probabilidades_subproblemas_calcualdas = []
         MetodosComunes.mostrar_subproblemas_en_letras(subproblemas, self._variables_sistema_candidato)
         for subproblema in subproblemas:
             variables_estado_futuro_subproblema = subproblema[0]
+            variables_estado_actual_subproblema = subproblema[1]
             letra_estado_futuro = MetodosComunes.covertir_estado_de_lista_a_letras(variables_estado_futuro_subproblema, self._variables_sistema_candidato, es_variables_estado_futuro=True)
             print(f"Variables estado futuro subproblema: {letra_estado_futuro}")
             matriz_para_analizar = self._matrices_probalilidades_estados_futuros[letra_estado_futuro]
-            probabilidad_subproblema = self.calcular_probabilidad_caso_base_un_elemento_estado_futuro_estado_actual_vacio(matriz_para_analizar, variables_estado_futuro_subproblema)
+            probabilidad_subproblema = self.calcular_probabilidad_caso_base_un_elemento_estado_futuro_estado_actual_vacio(matriz_para_analizar, variables_estado_actual_subproblema)
             print(f"Probabilidad subproblema: {probabilidad_subproblema}")
             probabilidades_subproblemas_calcualdas.append(probabilidad_subproblema)
+
         distribucion_probabilidades = MetodosComunes.aplicar_producto_tensor_a_lista_distribucion_probabilidades(probabilidades_subproblemas_calcualdas)
+        self._cache_probabilidades[letras_estados] = distribucion_probabilidades
         return distribucion_probabilidades
 
     def calcular_probabilidad_caso_variables_estado_futuro_vacio(self, variables_estado_actual:list) -> list:
         distribucion_probabilidades = [1.0]
         estado_futuro = [0] * len(variables_estado_actual)
         letras_estados = MetodosComunes.crear_conjunto_de_letras_segun_estados(estado_futuro, variables_estado_actual, self._variables_sistema_candidato)
+        if letras_estados in self._cache_probabilidades:
+            print("Probabilidad ya calculada")
+            return self._cache_probabilidades[letras_estados]
         print(f"Letras estados: {letras_estados}")
         self._cache_probabilidades[letras_estados] = distribucion_probabilidades
         return distribucion_probabilidades
