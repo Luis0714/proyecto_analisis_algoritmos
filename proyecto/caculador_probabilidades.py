@@ -20,7 +20,6 @@ class CalculadorProbabilidades:
         self._matrices_probalilidades_estados_futuros = {}
         self._cache_probabilidades = {}
         self.calcular_probabilidades_estados_futuros(matriz_sistema_candidato)
-       
     
     def calcular_probabilidad(self, variables_estado_futuro: list, variables_estado_actual: list) -> DataFrame:
      
@@ -140,7 +139,7 @@ class CalculadorProbabilidades:
         subproblemas = MetodosComunes.obtener_subproblemas(variables_estado_actual, variables_estado_futuro)
         probabilidades_subproblemas_calcualdas = []
         MetodosComunes.mostrar_subproblemas_en_letras(subproblemas, self._variables_sistema_candidato)
-        
+
 
     def calcular_probabilidad_caso_variables_estado_futuro_vacio(self, variables_estado_actual:list) -> list:
         valor_estado_actual = MetodosComunes.obtener_valor_estado_actual(self._estado_inicial, variables_estado_actual)
