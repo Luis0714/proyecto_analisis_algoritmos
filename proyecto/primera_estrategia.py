@@ -3,14 +3,15 @@ from proyecto.metodos_comunes import MetodosComunes
 
 
 class PrimeraEstretegia:
-    def __init__(self):
-        self.calculador_probabilidades = CalculadorProbabilidades()
 
-    def ejecutar(self):
-        print("Ejecutando la primera estrategia")
+    def __init__(self, matriz_sistema_candidato, variables_sistema_candidato, estado_inicial: list):
+        self.calculador_probabilidades = CalculadorProbabilidades(matriz_sistema_candidato, variables_sistema_candidato, estado_inicial)
+   
 
+    def encontrar_particicion_con_menor_perdida(conjunto_subsistema:dict) -> dict | float:
+        pass
 
-
+   
     def funcion_G(self, conjunto_estados:dict, distribucion_probabilidades_subsistema, cantidad_variables:dict) -> float:
         """
         Función G, g= EMD(P(conjunto_estados)⊗P(conjunto_estados_conplemento), P(distribucion_probabilidades_subsistema))
