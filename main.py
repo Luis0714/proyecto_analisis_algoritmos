@@ -27,26 +27,30 @@ def main():
 
     variable_estado_futuro_dos = [0, 0, 1] # C t+1
     variable_estado_actual_dos = [1, 0, 1] # ABC t
-    print("Matriz sistema candidato")
-    print(matriz_sistema_candidato, '\n')
-    distribucion_uno = prueba_calcular_probabilidad(matriz_sistema_candidato, 
-                                variables_sistema_candidato, 
-                                variable_estado_futuro,
-                                variable_estado_actual,
-                                estado_inicial)
-    print("distriucion de probabilidad uno")
-    print(distribucion_uno)
-    distribucion_dos = prueba_calcular_probabilidad(matriz_sistema_candidato,
-                                variables_sistema_candidato,
-                                variable_estado_futuro_dos,
-                                variable_estado_actual_dos,
-                                estado_inicial)
-    print("distriucion de probabilidad dos")
-    print(distribucion_dos)
 
-    EMD = prueba_emd(distribucion_uno, distribucion_dos)
-    print("Prueba exitosa")
-    print(F"Valor de EMD - {EMD}")
+    print("Estado bits")
+    print(metodos_comunes.convertir_estado_de_lista_letras_a_lista_bits(['At+1', 'Ct+1'], [1, 1, 1]))
+
+    # print("Matriz sistema candidato")
+    # print(matriz_sistema_candidato, '\n')
+    # distribucion_uno = prueba_calcular_probabilidad(matriz_sistema_candidato, 
+    #                             variables_sistema_candidato, 
+    #                             variable_estado_futuro,
+    #                             variable_estado_actual,
+    #                             estado_inicial)
+    # print("distriucion de probabilidad uno")
+    # print(distribucion_uno)
+    # distribucion_dos = prueba_calcular_probabilidad(matriz_sistema_candidato,
+    #                             variables_sistema_candidato,
+    #                             variable_estado_futuro_dos,
+    #                             variable_estado_actual_dos,
+    #                             estado_inicial)
+    # print("distriucion de probabilidad dos")
+    # print(distribucion_dos)
+
+    # EMD = prueba_emd(distribucion_uno, distribucion_dos)
+    # print("Prueba exitosa")
+    # print(F"Valor de EMD - {EMD}")
 
 
 

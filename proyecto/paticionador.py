@@ -9,9 +9,11 @@ class Particionador:
     def __init__(self, matriz_sistema_candidato,variables_sistema_candidato: list, conjunto_subsistema: dict, estado_inicial: list):
         self.calculador_probabilidades = CalculadorProbabilidades(matriz_sistema_candidato, variables_sistema_candidato, estado_inicial)
         self.generador_matriz = GeneradorMatriz()
+        self.variables_sistema_cadidato = variables_sistema_candidato
         self.cantidad_variables_sistema_candidato = MetodosComunes.obtener_cantidad_variables_a_tener_en_cuenta_en_estado(variables_sistema_candidato)
         self.distribucion_probabilidades_subsistema_Pv = self.calcular_probabilidad_subsistema_Pv(conjunto_subsistema)
-
+        print("Distribucion de probabilidades del subsistema Pv: ", "\n")
+        print(self.distribucion_probabilidades_subsistema_Pv)
 
     def ejecutar_primera_estrategia(self, matriz_original, variables_sistema_candidato, conjunto_subsistema, estado_inicial):
         matriz_sistema_candidato = self.generador_matriz.generar_matriz_sistema_candidato(matriz_original, estado_inicial, variables_sistema_candidato)
@@ -19,8 +21,8 @@ class Particionador:
         mejor_particion, valor_perdida_particion = primera_estrategia.encontrar_particicion_con_menor_perdida(conjunto_subsistema)
 
 
-    def calcular_probabilidad_subsistema_Pv(self, conjunto_subsistema:dict):
-        variables_estados = MetodosComunes.convertir_estado_de_dic_a_lista(conjunto_subsistema, self.cantidad_variables_sistema_candidato)
+    def calcular_probabilidad_subsistema_Pv(self, conjunto_subsistema:list):
+        variables_estados = MetodosComunes.convertir_estado_de_lista_letras_a_lista_bits(conjunto_subsistema, self.variables_sistema_cadidato)
         estado_futuro = variables_estados[0]
         estado_actual = variables_estados[1]
         return self.calculador_probabilidades.calcular_probabilidad(estado_futuro, estado_actual)

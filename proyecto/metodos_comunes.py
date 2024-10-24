@@ -28,7 +28,7 @@ class MetodosComunes:
         Convierte un estado de lista a letras
         """
         vacio = "{"+"vacio"+"}"
-        letras_variables = MetodosComunes.generar_letras_abecedario_según_cantidad(variables_sistama_candidato)
+        letras_variables = MetodosComunes.generar_letras_abecedario_segun_cantidad(variables_sistama_candidato)
         letras_estado = ''.join([letras_variables[i] for i, bit in enumerate(estado) if bit == 1])
         if letras_estado == "":
             letras_estado = vacio
@@ -39,7 +39,20 @@ class MetodosComunes:
         return letras_estado
     
     @staticmethod
-    def generar_letras_abecedario_según_cantidad(variables_sistema_candidato: list) -> list:
+    def convertir_lista_bits_estado_a_lista_letras(lista_bits_estado: list[int], variables_sistema_candidato:list) -> list[str]:
+        """
+        Convierte una lista de bits en las letras correspondientes.
+        Ejemplo: Si recibe [1, 1, 0] y hay 3 variables, retornará ['A', 'B'].
+        """
+        letras_abecedario = MetodosComunes.generar_letras_abecedario_segun_cantidad(variables_sistema_candidato)
+        # Crear la lista de letras correspondientes a los bits en 1
+        letras_resultantes = [letras_abecedario[i] for i, bit in enumerate(lista_bits_estado) if bit == 1]
+        
+        return letras_resultantes
+
+    
+    @staticmethod
+    def generar_letras_abecedario_segun_cantidad(variables_sistema_candidato: list) -> list:
         """
         Genera letras del abecedario según la cantidad de variables
         """
@@ -144,7 +157,7 @@ class MetodosComunes:
             print(f"Subproblema: {letras_estado_futuro}, {letras_estado_actual}")
 
     @staticmethod
-    def generar_complemento_estado(variables_estado:dict, variables_subsistema:dict) -> list:
+    def generar_complemento_estado(variables_estado:list, variables_subsistema:list) -> list:
         """
         Genera el complemento del estado, es decir, las variables que no están en el estado
         y si están en el subsistema ejem:
@@ -155,23 +168,36 @@ class MetodosComunes:
         return complemento
     
     @staticmethod
-    def convertir_estado_de_dic_a_lista(variables_estados: dict[str], variables_sistema_candidato: list) -> list:
+    def convertir_estado_de_lista_letras_a_lista_bits(variables_estados: list[str], variables_sistema_candidato: list) -> list:
         """
-        Convierte un estado de diccionario a lista, 
-        devuelve una lista con dos elementos, el primero representa el estado futuro y el segundo el estado actual
+        Convierte un estado de lista de letras a lista de bits.
+        Devuelve una lista con dos elementos: el primero representa el estado futuro y el segundo el estado actual.
         """
-        variables_estado_futuro = [""] * len(variables_sistema_candidato)
-        variables_estado_actual = [""] * len(variables_sistema_candidato)
+        # Crear las listas para estado futuro y estado actual del tamaño del sistema candidato
+        letras_sistema_candidato = MetodosComunes.convertir_lista_bits_estado_a_lista_letras(variables_sistema_candidato, variables_sistema_candidato)
+        print("Letras sistema candidato")
+        print(letras_sistema_candidato)
+        variables_estado_futuro = [0] * len(variables_sistema_candidato)
+        variables_estado_actual = [0] * len(variables_sistema_candidato)
+
+        # Iterar por cada variable en variables_estados
         for variable in variables_estados:
+            # Obtener la letra de la variable (ejemplo: A, B, C...)
+            letra = variable[0]
+            # Obtener la posición correspondiente de la letra en el sistema candidato
+            index = letras_sistema_candidato.index(letra)
+            
+            # Si la variable es del estado futuro (termina en 't+1')
             if variable.endswith("t+1"):
-                variables_estado_futuro.append(variable)
+                variables_estado_futuro[index] = 1
+            # Si la variable es del estado actual
             else:
-                variables_estado_actual.append(variable)
-        #reemplzar las variables por 1 si estan en el estado y "" por 0 
-        estado_futuro = [1 if variable in variables_estado_futuro else 0 for variable in variables_sistema_candidato]
-        estado_actual = [1 if variable in variables_estado_actual else 0 for variable in variables_sistema_candidato]
-        return [estado_futuro, estado_actual]
-    
+                variables_estado_actual[index] = 1
+
+        # Retornar la lista de bits para estado futuro y estado actual
+        return [variables_estado_futuro, variables_estado_actual]
+
+        
     @staticmethod
     def calcular_emd(distribucion_uno: np.ndarray, distribucion_dos: np.ndarray) -> float:
         """
