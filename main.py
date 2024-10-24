@@ -4,6 +4,8 @@ from proyecto.caculador_probabilidades import CalculadorProbabilidades
 from proyecto.generador_matriz import GeneradorMatriz
 from proyecto.marginalizador import Maginalizador
 from proyecto.metodos_comunes import MetodosComunes
+from proyecto.paticionador import Particionador
+from proyecto.primera_estrategia import PrimeraEstretegia
 
 acceso_datos = AccesoDatos()
 generador_matriz = GeneradorMatriz()
@@ -19,38 +21,19 @@ def main():
     #prubas con sistema candidato con tres variables ABC
     estado_inicial = [0, 0, 0, 0]
     variables_sistema_candidato = [1, 1, 1, 0] # 1 indica que se tiene en cuenta la variable, 0 que no se tiene en cuenta A, B, C menos D
-    matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
-
+    elementos_subsistema = ['At+1', 'Bt+1', 'At', 'Bt']
+    #matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
+   
+    print("PROCESO PARA GENERAR LAS W")
+    particionador = Particionador(matriz, variables_sistema_candidato, elementos_subsistema, estado_inicial)
+    particionador.ejecutar_primera_estrategia(variables_sistema_candidato, elementos_subsistema, estado_inicial)
+    
     #prueba con todas las variables del estado actual y futuro
-    variable_estado_futuro = [1, 1, 0] # AB t+1
-    variable_estado_actual = [0, 1, 0] # VACIO t
+    # variable_estado_futuro = [1, 1, 0] # AB t+1
+    # variable_estado_actual = [0, 1, 0] # VACIO t
 
-    variable_estado_futuro_dos = [0, 0, 1] # C t+1
-    variable_estado_actual_dos = [1, 0, 1] # ABC t
-
-    print("Estado bits")
-    print(metodos_comunes.convertir_estado_de_lista_letras_a_lista_bits(['At+1', 'Ct+1'], [1, 1, 1]))
-
-    # print("Matriz sistema candidato")
-    # print(matriz_sistema_candidato, '\n')
-    # distribucion_uno = prueba_calcular_probabilidad(matriz_sistema_candidato, 
-    #                             variables_sistema_candidato, 
-    #                             variable_estado_futuro,
-    #                             variable_estado_actual,
-    #                             estado_inicial)
-    # print("distriucion de probabilidad uno")
-    # print(distribucion_uno)
-    # distribucion_dos = prueba_calcular_probabilidad(matriz_sistema_candidato,
-    #                             variables_sistema_candidato,
-    #                             variable_estado_futuro_dos,
-    #                             variable_estado_actual_dos,
-    #                             estado_inicial)
-    # print("distriucion de probabilidad dos")
-    # print(distribucion_dos)
-
-    # EMD = prueba_emd(distribucion_uno, distribucion_dos)
-    # print("Prueba exitosa")
-    # print(F"Valor de EMD - {EMD}")
+    # variable_estado_futuro_dos = [0, 0, 1] # C t+1
+    # variable_estado_actual_dos = [1, 0, 1] # ABC t
 
 
 
@@ -202,7 +185,33 @@ def prueba_carga_matriz_original():
 
 #Pasos para método calcular la probabilidad de una variable e
 
-#1. valid
+#FFFFFF
+
+    # print("Estado bits")
+    # print(metodos_comunes.convertir_estado_de_lista_letras_a_lista_bits(['At+1', 'Ct+1'], [1, 1, 1]))
+
+    # print("Matriz sistema candidato")
+    # print(matriz_sistema_candidato, '\n')
+    # distribucion_uno = prueba_calcular_probabilidad(matriz_sistema_candidato, 
+    #                             variables_sistema_candidato, 
+    #                             variable_estado_futuro,
+    #                             variable_estado_actual,
+    #                             estado_inicial)
+    # print("distriucion de probabilidad uno")
+    # print(distribucion_uno)
+    # distribucion_dos = prueba_calcular_probabilidad(matriz_sistema_candidato,
+    #                             variables_sistema_candidato,
+    #                             variable_estado_futuro_dos,
+    #                             variable_estado_actual_dos,
+    #                             estado_inicial)
+    # print("distriucion de probabilidad dos")
+    # print(distribucion_dos)
+
+    # EMD = prueba_emd(distribucion_uno, distribucion_dos)
+    # print("Prueba exitosa")
+    # print(F"Valor de EMD - {EMD}")
+
+
 
 
 if __name__ == "__main__":

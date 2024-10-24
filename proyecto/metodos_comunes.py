@@ -56,7 +56,7 @@ class MetodosComunes:
         """
         Genera letras del abecedario según la cantidad de variables
         """
-        cantidad = len(variables_sistema_candidato)
+        cantidad = MetodosComunes.obtener_cantidad_variables_a_tener_en_cuenta_en_estado(variables_sistema_candidato)
         abecedario = [chr(65 + i) for i in range(cantidad)]
         letras = [abecedario[i] for i, bit in enumerate(variables_sistema_candidato) if bit == 1]
         return letras
@@ -164,8 +164,7 @@ class MetodosComunes:
         estado = {At, Bt}  y subsistema = {At, Bt, At+1, Ct+1}.
         complemento = {At+1, Ct+1}
         """
-        complemento = variables_subsistema - variables_estado
-        return complemento
+        return list(set(variables_subsistema) - set(variables_estado))
     
     @staticmethod
     def convertir_estado_de_lista_letras_a_lista_bits(variables_estados: list[str], variables_sistema_candidato: list) -> list:
@@ -177,8 +176,8 @@ class MetodosComunes:
         letras_sistema_candidato = MetodosComunes.convertir_lista_bits_estado_a_lista_letras(variables_sistema_candidato, variables_sistema_candidato)
         print("Letras sistema candidato")
         print(letras_sistema_candidato)
-        variables_estado_futuro = [0] * len(variables_sistema_candidato)
-        variables_estado_actual = [0] * len(variables_sistema_candidato)
+        variables_estado_futuro = [0] * MetodosComunes.obtener_cantidad_variables_a_tener_en_cuenta_en_estado(variables_sistema_candidato)
+        variables_estado_actual = [0] * MetodosComunes.obtener_cantidad_variables_a_tener_en_cuenta_en_estado(variables_sistema_candidato)
 
         # Iterar por cada variable en variables_estados
         for variable in variables_estados:
