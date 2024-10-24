@@ -71,7 +71,7 @@ class PrimeraEstretegia:
                 indice_elemento_u += 1
             # se obtiene el indice del elemento con menor perdida
             indice_elemento_menor_perdida = perdidas_elementos_u.index(min(perdidas_elementos_u))
-            print("Indice del elemento con menor perdida: ", indice_elemento_menor_perdida)
+            print("Indice del elemento con menor perdida: ", indice_elemento_menor_perdida)     
             #se obtiene el elemento con menor perdida
             elemento_menor_perdida = elementos_u[indice_elemento_menor_perdida]
             print("Elemento con menor perdida: ", elemento_menor_perdida)
@@ -87,8 +87,34 @@ class PrimeraEstretegia:
         # Llamar función para generar la partición candidata y guardarla
         return []
 
-    def comparar_particiones_candidatas(self, particiones_candidatas: list) -> dict | float:
-        pass
+    def comparar_particiones_candidatas(self, particiones_candidatas: list,
+                                        distribucion_probabilidades_subsistema: list, variables_sistema_candidato: list) -> list | int:
+        '''
+        Se calculan las EMD de cada partición candidata y se selecciona la partición con menor EMD
+        '''
+        emds_particiones = [0]*len(particiones_candidatas)
+        
+        # Se calcula la EMD de cada partición candidata
+        for particion in particiones_candidatas:
+            
+            # 1. Convertimos los estados de letras a listas de 0 y 1, la posición 0 es el estado futuro y la posición 1 es el estado actual
+            parte_1_particion = MetodosComunes.convertir_estado_de_lista_letras_a_lista_bits(particion[0], variables_sistema_candidato)
+            parte_2_particion = MetodosComunes.convertir_estado_de_lista_letras_a_lista_bits(particion[1], variables_sistema_candidato)
+            # 2. Calculamos la probabilidad de cada parte de la partición. Ej: P1([1,0,0],[1,0,1]) y P2([0,0,0],[1,1,0])
+            probabilidad_1_particion = self.calculador_probabilidades.calcular_probabilidad(parte_1_particion[0], parte_1_particion[1])
+            probabilidad_2_particion = self.calculador_probabilidades.calcular_probabilidad(parte_2_particion[0], parte_2_particion[1])
+            # 3. Calculamos el producto tensorial de las probabilidades de las partes de la partición  
+            probabilidad_particion = MetodosComunes.tensor_product(probabilidad_1_particion, probabilidad_2_particion)
+            # 4. Calculamos la EMD de la partición respecto a la distribución de probabilidades del subsistema y lo guardamos en la lista de EMDs
+            emd = MetodosComunes.calcular_emd(probabilidad_particion, distribucion_probabilidades_subsistema)
+            print("EMD de la partición: ", emd)
+            emds_particiones[particiones_candidatas.index(particion)] = emd
+
+        # Se selecciona la partición con menor EMD
+        indice_menor_emd = emds_particiones.index(min(emds_particiones))
+        particion_seleccionada = particiones_candidatas[indice_menor_emd]
+
+        return [particion_seleccionada, indice_menor_emd]
     
     def funcion_G(self, elementos_estado:list, elementos_subsistema_v:list, distribucion_probabilidades_subsistema_v) -> float:
         """

@@ -5,7 +5,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 from proyecto.metodos_comunes import MetodosComunes
-from pyemd import emd
+# from pyemd import emd
 from numpy.typing import NDArray
 
 class AccesoDatos:

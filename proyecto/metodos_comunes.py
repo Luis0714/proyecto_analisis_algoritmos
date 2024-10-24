@@ -2,7 +2,7 @@ import math
 from pandas import DataFrame
 import numpy as np
 from scipy.stats import wasserstein_distance
-import pyemd as pyphi
+# import pyemd as pyphi
 
 class MetodosComunes:
   

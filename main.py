@@ -18,15 +18,29 @@ def main():
     print("Matriz original")
     print(matriz,'\n')
     
-    #prubas con sistema candidato con tres variables ABC
+    #pruebas con sistema candidato con tres variables ABC
     estado_inicial = [0, 0, 0, 0]
-    variables_sistema_candidato = [1, 1, 1, 0] # 1 indica que se tiene en cuenta la variable, 0 que no se tiene en cuenta A, B, C menos D
+    variables_sistema_candidato = [1, 1, 0, 0] # 1 indica que se tiene en cuenta la variable, 0 que no se tiene en cuenta A, B, C menos D
     elementos_subsistema = ['At+1', 'Bt+1', 'At', 'Bt']
-    #matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
-   
-    print("PROCESO PARA GENERAR LAS W")
-    particionador = Particionador(matriz, variables_sistema_candidato, elementos_subsistema, estado_inicial)
-    particionador.ejecutar_primera_estrategia(variables_sistema_candidato, elementos_subsistema, estado_inicial)
+    matriz_sistema_candidato = generador_matriz.generar_matriz_sistema_candidato(matriz, estado_inicial, variables_sistema_candidato)
+    print("lista subsistema: \n", metodos_comunes.convertir_estado_de_lista_letras_a_lista_bits(elementos_subsistema, variables_sistema_candidato))
+
+    primera_estrategia = PrimeraEstretegia(matriz_sistema_candidato, variables_sistema_candidato, estado_inicial)
+    
+    particiones_candidatas = [[["At"], ["Bt","At+1"]], [["At+1","Bt"], ["Bt+1","Bt"]]]
+    distribucion_probabilidad_subsistema = prueba_calcular_probabilidad(matriz_sistema_candidato,
+                                                                        variables_sistema_candidato,
+                                                                        [1, 1, 0, 0],
+                                                                        [1, 1, 0, 0], 
+                                                                        estado_inicial)
+
+    print(primera_estrategia.comparar_particiones_candidatas(particiones_candidatas,
+                                                             distribucion_probabilidad_subsistema,
+                                                             variables_sistema_candidato))
+
+    # print("PROCESO PARA GENERAR LAS W") 
+    # particionador = Particionador(matriz, variables_sistema_candidato, elementos_subsistema, estado_inicial)
+    # particionador.ejecutar_primera_estrategia(variables_sistema_candidato, elementos_subsistema, estado_inicial)
     
     #prueba con todas las variables del estado actual y futuro
     # variable_estado_futuro = [1, 1, 0] # AB t+1
